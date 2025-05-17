@@ -1,4 +1,4 @@
-
+-- Define the item categories and their base points
 local ITEM_CATEGORIES = {
     Common = { points = 1, items = {"Carrot", "Strawberry"} },
     Uncommon = { points = 2, items = {"Blueberry", "Orange Tulip"} },
@@ -8,19 +8,19 @@ local ITEM_CATEGORIES = {
     Divine = { points = 6, items = {"Grape", "Mushroom", "Pepper Cacao", "Prismatic", "Beanstalk"} }
 }
 
-
+-- Define bonus points
 local BONUS_POINTS = {
     Gold = 2,
     Rainbow = 3,
     Bloodlit = 2
 }
 
-
+-- Get the local player and services
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local userInputService = game:GetService("UserInputService")
 
-
+-- Create the main UI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BackpackCounterUI"
 screenGui.ResetOnSpawn = false
@@ -32,10 +32,10 @@ mainFrame.Position = UDim2.new(0.35, 0, 0.25, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 mainFrame.BackgroundTransparency = 0.3
 mainFrame.BorderSizePixel = 0
-mainFrame.Active = true 
+mainFrame.Active = true -- Enable dragging
 mainFrame.Parent = screenGui
 
-
+-- Add rounded corners
 local mainFrameCorner = Instance.new("UICorner")
 mainFrameCorner.CornerRadius = UDim.new(0, 10)
 mainFrameCorner.Parent = mainFrame
@@ -63,7 +63,7 @@ totalScoreLabel.Text = "Total Score: 0"
 totalScoreLabel.Font = Enum.Font.SourceSansBold
 totalScoreLabel.Parent = mainFrame
 
-
+-- Create the toggle UI
 local toggleFrame = Instance.new("Frame")
 toggleFrame.Size = UDim2.new(0.1, 0, 0.05, 0)
 toggleFrame.Position = UDim2.new(0.9, 0, 0.05, 0)
@@ -90,6 +90,7 @@ local toggleButtonCorner = Instance.new("UICorner")
 toggleButtonCorner.CornerRadius = UDim.new(0, 5)
 toggleButtonCorner.Parent = toggleButton
 
+-- Toggle main UI visibility
 local isMainUIVisible = true
 toggleButton.MouseButton1Click:Connect(function()
     isMainUIVisible = not isMainUIVisible
@@ -97,6 +98,7 @@ toggleButton.MouseButton1Click:Connect(function()
     toggleButton.Text = isMainUIVisible and "Hide" or "Show"
 end)
 
+-- Dragging logic for main UI
 local isDragging = false
 local dragStart = nil
 local startPos = nil
@@ -128,6 +130,7 @@ mainFrame.InputEnded:Connect(function(input)
     end
 end)
 
+-- Function to get the item name and total points from a tool's name
 local function getItemInfo(toolName)
     local lowerToolName = toolName:lower()
     if not lowerToolName:find("moonlit") then
@@ -139,7 +142,7 @@ local function getItemInfo(toolName)
     for category, data in pairs(ITEM_CATEGORIES) do
         for _, name in pairs(data.items) do
             local lowerItemName = name:lower()
-            if lowerTool magia
+            if lowerToolName:find(lowerItemName) then
                 itemName = name
                 basePoints = data.points
                 break
@@ -166,6 +169,7 @@ local function getItemInfo(toolName)
     return itemName, basePoints + bonusPoints
 end
 
+-- Function to calculate the total score and update the UI
 local function calculateBackpackScore(backpack)
     local totalScore = 0
     local itemCounts = {}
@@ -220,13 +224,16 @@ local function calculateBackpackScore(backpack)
     return totalScore
 end
 
+-- Get the local player's Backpack
 local backpack = player:WaitForChild("Backpack")
 
+-- Initial score calculation
 local function updateScore()
     local score = calculateBackpackScore(backpack)
     print(string.format("Total Score: %d", score))
 end
 
+-- Run initial score calculation
 updateScore()
 backpack.ChildAdded:Connect(updateScore)
 backpack.ChildRemoved:Connect(updateScore)
